@@ -1,3 +1,4 @@
+pysqlite3==0.5.4
 pysqlite3-binary==0.5.4
 aiohappyeyeballs==2.4.6
 aiohttp==3.11.12

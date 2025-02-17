@@ -4,7 +4,7 @@ from chromadb.utils.embedding_functions.sentence_transformer_embedding_function 
     SentenceTransformerEmbeddingFunction
 from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
-import chromadb
+
 import os
 import openai
 from openai import OpenAI
@@ -18,7 +18,7 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-
+import chromadb
 
 document = ["pdfs/OWU_i_Karta_produktu_Warta_Dla_Ciebie_i_Rodziny_od_14.04.2024.pdf",
             "pdfs/WARTA_OWU_ACS.pdf",
