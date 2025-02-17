@@ -13,6 +13,13 @@ from dotenv import load_dotenv, find_dotenv
 from prompt_optimalization import  PromptOptimalization
 import streamlit as st
 
+
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+
+
 document = ["pdfs/OWU_i_Karta_produktu_Warta_Dla_Ciebie_i_Rodziny_od_14.04.2024.pdf",
             "pdfs/WARTA_OWU_ACS.pdf",
             "pdfs/Wytyczne_pojazd_zastepczy.pdf"]
