@@ -62,13 +62,6 @@ if st.button("Szukaj"):
 
     result = result(prompt=prompt, prompt_task="Szukanie informacji w dokumencie")
 
-    print(result["optimized_prompt"])
-
-
-    print(f"Stare pytanie: {query}")
-    print(f"Nowe pytanie: {result["optimized_prompt"]}")
-
-
     query_embedding = bi_encoder_model.encode(query, convert_to_tensor=True)
 
     results = chroma_collection.query(query_embeddings=query_embedding.cpu().numpy(), n_results=10)
