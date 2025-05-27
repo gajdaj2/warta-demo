@@ -1,0 +1,206 @@
+import streamlit as st
+import streamlit.components.v1 as components
+
+# Konfiguracja strony
+st.set_page_config(
+    page_title="Kopiowanie do schowka",
+    page_icon="📋",
+    layout="wide"
+)
+
+st.title("📋 Kopiowanie tekstu do schowka")
+st.markdown("---")
+
+# Sekcja 1: Kopiowanie z text_area
+st.subheader("1. Kopiowanie z pola tekstowego")
+
+text_to_copy = st.text_area(
+    "Wprowadź tekst do skopiowania:",
+    value="To jest przykładowy tekst, który możesz skopiować do schowka!",
+    height=100,
+    key="main_text"
+)
+
+# Funkcja do tworzenia przycisku kopiowania
+def create_copy_button(text, button_id="copy_btn"):
+    # Escape'owanie tekstu dla JavaScript (obsługa cudzysłowów i nowych linii)
+    escaped_text = text.replace('\\', '\\\\').replace('`', '\\`').replace('$', '\\$')
+   
+    button_html = f"""
+    <div style="margin: 10px 0;">
+        <button onclick="copyToClipboard_{button_id}()" style="
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.37);
+            transition: all 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='translateY(0px)'">
+            📋 Kopiuj do schowka
+        </button>
+       
+        <div id="message_{button_id}" style="
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+        "></div>
+    </div>
+
+    <script>
+    function copyToClipboard_{button_id}() {{
+        const textToCopy = `{escaped_text}`;
+        const messageDiv = document.getElementById('message_{button_id}');
+       
+        if (navigator.clipboard && window.isSecureContext) {{
+            // Nowoczesne Clipboard API
+            navigator.clipboard.writeText(textToCopy).then(function() {{
+                showSuccessMessage_{button_id}();
+            }}).catch(function(err) {{
+                console.error('Błąd clipboard API: ', err);
+                fallbackCopy_{button_id}(textToCopy);
+            }});
+        }} else {{
+            // Fallback dla starszych przeglądarek
+            fallbackCopy_{button_id}(textToCopy);
+        }}
+    }}
+
+    function fallbackCopy_{button_id}(text) {{
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        textArea.style.opacity = '0';
+       
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+       
+        try {{
+            const successful = document.execCommand('copy');
+            if (successful) {{
+                showSuccessMessage_{button_id}();
+            }} else {{
+                showErrorMessage_{button_id}();
+            }}
+        }} catch (err) {{
+            console.error('Błąd execCommand: ', err);
+            showErrorMessage_{button_id}();
+        }}
+       
+        document.body.removeChild(textArea);
+    }}
+
+    function showSuccessMessage_{button_id}() {{
+        const messageDiv = document.getElementById('message_{button_id}');
+        messageDiv.innerHTML = '✅ Tekst został pomyślnie skopiowany do schowka!';
+        messageDiv.style.display = 'block';
+        messageDiv.style.backgroundColor = '#d4edda';
+        messageDiv.style.color = '#155724';
+        messageDiv.style.border = '1px solid #c3e6cb';
+       
+        setTimeout(function() {{
+            messageDiv.style.display = 'none';
+        }}, 3000);
+    }}
+
+    function showErrorMessage_{button_id}() {{
+        const messageDiv = document.getElementById('message_{button_id}');
+        messageDiv.innerHTML = '❌ Nie udało się skopiować tekstu. Spróbuj ponownie.';
+        messageDiv.style.display = 'block';
+        messageDiv.style.backgroundColor = '#f8d7da';
+        messageDiv.style.color = '#721c24';
+        messageDiv.style.border = '1px solid #f5c6cb';
+       
+        setTimeout(function() {{
+            messageDiv.style.display = 'none';
+        }}, 4000);
+    }}
+    </script>
+    """
+    return button_html
+
+# Wyświetl przycisk kopiowania
+st.components.v1.html(create_copy_button(text_to_copy, "main"), height=120)
+
+st.markdown("---")
+
+# Sekcja 2: Przykłady gotowych tekstów do kopiowania
+st.subheader("2. Gotowe teksty do kopiowania")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("**📧 Adres email:**")
+    email = "kontakt@example.com"
+    st.code(email)
+    st.components.v1.html(create_copy_button(email, "email"), height=80)
+
+with col2:
+    st.markdown("**📱 Numer telefonu:**")
+    phone = "+48 123 456 789"
+    st.code(phone)
+    st.components.v1.html(create_copy_button(phone, "phone"), height=80)
+
+st.markdown("---")
+
+# Sekcja 3: Kopiowanie kodu
+st.subheader("3. Kopiowanie fragmentów kodu")
+
+code_example = '''def hello_world():
+    print("Hello, World!")
+    return "Witaj świecie!"
+
+# Wywołanie funkcji
+result = hello_world()
+print(result)'''
+
+st.markdown("**Przykład kodu Python:**")
+st.code(code_example, language='python')
+st.components.v1.html(create_copy_button(code_example, "code"), height=80)
+
+st.markdown("---")
+
+# Sekcja 4: Kopiowanie z listy opcji
+st.subheader("4. Wybierz i skopiuj")
+
+options = {
+    "Łorem ipsum": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "Dane kontaktowe": "Jan Kowalski\nTel: +48 123 456 789\nEmail: jan.kowalski@example.com\nAdres: ul. Przykładowa 123, 00-001 Warszawa",
+    "SQL Query": "SELECT * FROM users WHERE active = 1 AND created_date >= '2024-01-01' ORDER BY created_date DESC;",
+    "HTML Template": '<!DOCTYPE html>\n<html>\n<head>\n    <title>Moja strona</title>\n</head>\n<body>\n    <h1>Witaj!</h1>\n</body>\n</html>'
+}
+
+selected_option = st.selectbox("Wybierz tekst do skopiowania:", list(options.keys()))
+
+if selected_option:
+    st.markdown(f"**Wybrany tekst:**")
+    st.text_area("", value=options[selected_option], height=100, key="selected_text", disabled=True)
+    st.components.v1.html(create_copy_button(options[selected_option], "selected"), height=80)
+
+# Sekcja 5: Informacje dodatkowe
+st.markdown("---")
+st.subheader("ℹ️ Informacje")
+
+st.info("""
+**Jak to działa:**
+- Kliknij przycisk "📋 Kopiuj do schowka" przy wybranym tekście
+- Tekst zostanie automatycznie skopiowany do schowka systemowego
+- Możesz go następnie wkleić (Ctrl+V / Cmd+V) w dowolnym miejscu
+
+**Kompatybilność:**
+- Działa w nowoczesnych przeglądarkach (Chrome, Firefox, Safari, Edge)
+- Automatycznie przełącza się na tryb fallback dla starszych przeglądarek
+- Wymaga protokołu HTTPS dla pełnej funkcjonalności Clipboard API
+""")
+
+
+st.warning("⚠️ **Uwaga:** W niektórych przeglądarkach może być wymagane zezwolenie na dostęp do schowka.")
